@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function QuizCard({ quizName, duration, students, date }) {
+export default function QuizCard({ quizName, duration, students, date, type }) {
   return (
-    <div className="font-bold bg-gradient-to-tr from-indigo-500 to-blue-400 hover:shadow-xl transition-all duration-300 p-5 rounded-md cursor-pointer">
-      <h1 className="text-2xl text-white">{quizName}</h1>
+    <div className="font-bold bg-gradient-to-tr from-indigo-700 to-blue-400 hover:shadow-xl transition-all duration-300 p-5 rounded-md cursor-pointer">
+      <h1 className="text-2xl text-white mb-2">{quizName}</h1>
       <div className="flex items-center bg-white rounded-md px-1">
         <ion-icon name="alarm-outline"></ion-icon>
         <h1 className="ml-1">{duration}</h1>

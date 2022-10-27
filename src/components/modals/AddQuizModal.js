@@ -11,6 +11,7 @@ export default function AddQuizModal() {
   //Variables
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
+  const [type, setType] = useState("radio");
 
   const debounceHandler = (fn, delay) => {
     let timeoutId;
@@ -43,6 +44,9 @@ export default function AddQuizModal() {
     //   dispatch(controlTeamModal());
   };
 
+  const handleType = (e) => {
+    setType(e.target.value);
+  };
   return (
     open && (
       <>
@@ -59,7 +63,7 @@ export default function AddQuizModal() {
             Add Quiz
           </h2>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="shadow-sm -space-y-px">
+            <div className="-space-y-px">
               <div>
                 <input
                   name="title"
@@ -71,9 +75,51 @@ export default function AddQuizModal() {
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
-              <h1 className="block mx-auto w-1/4 rounded-sm py-1 text-center text-white my-2 bg-green-700 cursor-pointer hover:bg-green-800">
-                Add Question +
-              </h1>
+              <div className="p-2 border border-blue-300 rounded border-l-8">
+                <div className="flex gap-4 items-center">
+                  <h1>1</h1>
+                  <input
+                    name="title"
+                    type="text"
+                    required
+                    className="appearance-none rounded relative block w-2/3 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                    placeholder="Question"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                  <select
+                    name="type"
+                    id="question-type"
+                    className="border border-gray-300 p-1.5 rounded w-1/3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"
+                    onChange={handleType}
+                  >
+                    <option value="radio">Radio</option>
+                    <option value="checkbox">CheckBox</option>
+                    <option value="text">Dropdown</option>
+                    <option value="file">File Uplaod</option>
+                  </select>
+                </div>
+                <div className="ml-10 mt-2">
+                  {type !== "text" && <input type={type} />}
+                  {type !== "file" && (
+                    <input
+                      type="text"
+                      className="border ml-5 px-2"
+                      placeholder="Option 1"
+                    />
+                  )}
+                  {type !== "file" && (
+                    <h1 className="text-center w-1/4 mt-2 cursor-pointer text-blue-700 font-bold border border-blue-600">
+                      Add Option+
+                    </h1>
+                  )}
+                </div>
+              </div>
+              <div>
+                <h1 className="block mx-auto w-1/4 rounded-sm py-1 text-center text-white my-5 bg-green-700 cursor-pointer hover:bg-green-800">
+                  Add Question +
+                </h1>
+              </div>
             </div>
 
             <div>

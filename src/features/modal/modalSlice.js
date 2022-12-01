@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   addQuizModal: false,
+  participateModal: false,
 };
 
 const modalSlice = createSlice({
@@ -11,8 +12,12 @@ const modalSlice = createSlice({
     controlAddQuizModal(state) {
       state.addQuizModal = !state.addQuizModal;
     },
+    controlParticipateModal(state) {
+      state.participateModal = !state.participateModal;
+    },
   },
 });
 
-export const { controlAddQuizModal } = modalSlice.actions;
+export const { controlAddQuizModal, controlParticipateModal } =
+  modalSlice.actions;
 export default modalSlice.reducer;

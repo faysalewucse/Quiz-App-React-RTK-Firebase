@@ -5,4 +5,6 @@ export const store = configureStore({
   reducer: {
     modal: modalSlice,
   },
+  devTools: process.env.NODE_ENV !== "production",
+  middleware: (getDefaultMiddlewares) => getDefaultMiddlewares(),
 });

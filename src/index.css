@@ -1,6 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "Jonota";
+  src: url("../public/fonts/ShorifJonota.ttf");
+}
+
+@font-face {
+  font-family: "Sandwip";
+  src: url("../public/fonts/ShorifSandwip.ttf");
+}
+
 @layer base {
   h1 {
     @apply text-6xl;

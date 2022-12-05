@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { controlParticipateModal } from "../../features/modal/modalSlice";
 export default function ParticipateQuizModal() {
   //Dispatcher
   const dispatch = useDispatch();
 
+  //page navigator
+  const navigate = useNavigate();
   //initial Variables
   const { participateModal: open } = useSelector((state) => state.modal) || {};
 
@@ -13,17 +16,8 @@ export default function ParticipateQuizModal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //   await addTeam({
-    //     data: {
-    //       creator: myEmail,
-    //       name: name,
-    //       title: title,
-    //       color: getColor(),
-    //       date: new Date().getTime(),
-    //       members: myEmail,
-    //     },
-    //   });
-    //   dispatch(controlTeamModal());
+    dispatch(controlParticipateModal());
+    navigate(`/participateQuiz/${code.trim()}`);
   };
 
   return (

@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import { useAuth } from "../contexts/AuthContext";
 import Loading from "../utils/Loading";
 import { ToastContainer, toast } from "react-toastify";
+import Error from "../utils/Error";
 
 export default function ParticipateQuiz() {
   //getCurrentUserUID
@@ -17,18 +18,23 @@ export default function ParticipateQuiz() {
   //initiallize variables
   const joinKey = useParams().joinKey;
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState();
   const [quizInfo, setQuizInfo] = useState(undefined);
   const [questions, setQuestions] = useState(undefined);
 
-  console.log(joinKey);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let flag = false;
     questions.forEach((question) => {
-      if (question.required === true && question.answer === "none") {
-        return toast.error("All Required Question is not answ");
+      if (question.required === true && question.answer.length === 0) {
+        flag = true;
+        toast.error(`Question ${question.id} is required but not answered.`);
+        return;
       }
     });
+
+    if (flag) return;
 
     try {
       setLoading(true);
@@ -39,10 +45,10 @@ export default function ParticipateQuiz() {
           .toString(36)
           .toUpperCase()}`
       );
-      const myParticipationRef = ref(
-        db,
-        `${uid}/participations/${Date.now().toString(36).toUpperCase()}`
-      );
+      //key for the participants
+      const key = `${Date.now().toString(36).toUpperCase()}`;
+
+      const myParticipationRef = ref(db, `${uid}/participations/${key}`);
       await set(participantsRef, {
         participant: uid,
         answers: questions.map((question) => {
@@ -54,12 +60,14 @@ export default function ParticipateQuiz() {
       });
 
       await set(myParticipationRef, {
+        quizinfo: quizInfo,
+        key: key,
         submission: JSON.stringify(questions),
       });
       toast.success("Submitted Answers successfully!");
       setLoading(false);
       setTimeout(() => {
-        navigate("/");
+        navigate(`/result/${key}`);
       }, 2000);
     } catch (error) {
       toast.error(error.message);
@@ -70,25 +78,27 @@ export default function ParticipateQuiz() {
 
   useEffect(() => {
     const db = getDatabase();
-
     const quizRef = ref(db);
     onValue(quizRef, (snapshot) => {
-      snapshot.forEach((childSnapshot) => {
-        const quizesData = childSnapshot.val();
-        console.log(quizesData);
-        // if (quizesData.myquizes[joinKey].joinKey === joinKey) {
-        //   const edit = JSON.parse(quizesData.myquizes[joinKey]?.questions).map(
-        //     (question) => {
-        //       return { ...question, answer: [] };
-        //     }
-        //   );
-        //   setQuestions(edit);
-        //   return setQuizInfo(quizesData.myquizes[joinKey]);
-        // }
-      });
+      if (snapshot) {
+        snapshot.forEach((childSnapshot) => {
+          const { myquizes } = childSnapshot?.val();
+          if (myquizes[joinKey]?.joinKey === joinKey) {
+            const edit = JSON.parse(myquizes[joinKey]?.questions).map(
+              (question) => {
+                return { ...question, answer: [] };
+              }
+            );
+            setQuestions(edit);
+            return setQuizInfo(myquizes[joinKey]);
+          }
+        });
+      }
+      return setError("No Data Available");
     });
   }, [joinKey]);
 
+  console.log(quizInfo);
   //function for set Answer
   const setAnswerHandler = (question, option) => {
     //if the value already exists in the answer [] then remove it
@@ -165,7 +175,7 @@ export default function ParticipateQuiz() {
           </form>
         </div>
       ) : (
-        <Loading />
+        <div>{!error ? <Loading /> : <Error msg={error} />}</div>
       )}
       <ToastContainer
         position="top-right"

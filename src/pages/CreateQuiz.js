@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { getDatabase, ref, set } from "firebase/database";
 import { useAuth } from "../contexts/AuthContext";
-import Alert from "../utils/Alert";
 import Button from "../components/Button";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -25,7 +24,6 @@ export default function CreateQuiz() {
   // const [emails, setEmails] = useState([]);
   // const [email, setEmail] = useState("");
 
-  const [alertVisibility, setalertVisibility] = useState(false);
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([
     {
@@ -34,6 +32,8 @@ export default function CreateQuiz() {
       options: [{ id: 1, value: "" }],
       type: "radio",
       required: false,
+      correct_answer: [],
+      mark: 0,
     },
   ]);
 
@@ -75,8 +75,6 @@ export default function CreateQuiz() {
     } catch (error) {
       toast.error(error.message);
     }
-
-    //dispatch(controlAddQuizModal());
   };
 
   //Add Question Function
@@ -89,6 +87,8 @@ export default function CreateQuiz() {
           question: "",
           options: [{}],
           type: "radio",
+          correct_answer: [],
+          marks: 0,
         },
       ];
     });
@@ -122,6 +122,20 @@ export default function CreateQuiz() {
     });
   };
   console.log(questions);
+
+  //Handle Marks
+  const markHandler = (e, question) => {
+    setQuestions((prevQuestions) => {
+      return prevQuestions.map((q) => {
+        if (q.id === question.id) {
+          return {
+            ...q,
+            mark: e.target.value,
+          };
+        } else return q;
+      });
+    });
+  };
   //Type Change Function
   const handleType = (e, question) => {
     setQuestions((prevQuestions) => {
@@ -150,10 +164,7 @@ export default function CreateQuiz() {
         });
       });
     } else {
-      setalertVisibility(true);
-      setTimeout(() => {
-        setalertVisibility(false);
-      }, 1500);
+      toast.error("More Than 4 Options is not allowed");
     }
   };
 
@@ -188,12 +199,13 @@ export default function CreateQuiz() {
     }
   };
 
-  //Option Deletion Function
+  //Delete Option Function
   const deleteOptionHandler = (question, index) => {
     if (question?.options.length > 1) {
       setQuestions((prevQuestions) => {
         return prevQuestions.filter((ques) => {
           if (ques.id === question.id) {
+            question.correct_answer = [];
             return (question.options = ques.options.filter(
               (option) => option.id !== index
             ));
@@ -204,6 +216,38 @@ export default function CreateQuiz() {
     } else {
     }
   };
+
+  const setcorrect_answerHandler = (question, option) => {
+    //if the value already exists in the correct_answer [] then remove it
+    const removed =
+      question.correct_answer.indexOf(option.value) !== -1 &&
+      question.correct_answer.splice(
+        question.correct_answer.indexOf(option.value),
+        1
+      );
+    //filtering the correct_answer array
+    const correct_answer =
+      question.type === "checkbox" //if the question type is checkbox then removed or push value to []
+        ? removed // if removed then push removed []
+          ? question.correct_answer
+          : [...question.correct_answer, option.value] //else push new value to []
+        : [option.value];
+
+    setQuestions((prevQuestion) => {
+      return [
+        ...prevQuestion.map((ques) => {
+          if (ques.id === question.id) {
+            return {
+              ...question,
+              correct_answer: correct_answer, // inserting the new correct_answer [] with the value
+            };
+          }
+          return ques;
+        }),
+      ];
+    });
+  };
+
   return (
     <div className="bg-indigo-100 min-h-screen p-10">
       <div className="max-w-7xl mx-auto md:px-24 px-2">
@@ -240,32 +284,17 @@ export default function CreateQuiz() {
 
           {privacy && (
             <div className="flex items-center">
-              {/* {emails.length > 0 && (
-                <div className="bg-white p-2">
-                  {emails.map((email) => {
-                    return <span>{email}</span>;
-                  })}
-                </div>
-              )} */}
               <input
                 type="text"
                 placeholder="Features is Not Available. Just Keep The Join Key Secret"
                 className="w-full p-2"
-                // onChange={(e) => setEmail(e.target.value)}
-                // onKeyDown={(e) => {
-                //   if (e.key === "Enter") {
-                //     emails.push(email);
-                //     setEmail("");
-                //     console.log(emails);
-                //   }
-                // }}
               />
             </div>
           )}
           {!alwaysPublic ? (
             <div className="field md:flex justify-between my-5">
               <div className="md:flex gap-5 items-center">
-                <h6 className="font-bold w-full">When exam Start?</h6>
+                <h6 className="font-bold w-full">Exam start Time</h6>
                 <DatePicker
                   selected={startDate}
                   className="p-2 rounded-md focus:outline-none shadow-sm hover:shadow-md"
@@ -275,7 +304,7 @@ export default function CreateQuiz() {
                 />
               </div>
               <div className="md:flex gap-5 items-center">
-                <h6 className="font-bold w-full">When exam End?</h6>
+                <h6 className="font-bold w-full">Exam end time</h6>
                 <DatePicker
                   selected={endDate}
                   className="p-2 rounded-md focus:outline-none shadow-sm hover:shadow-md"
@@ -291,107 +320,144 @@ export default function CreateQuiz() {
             return (
               <div
                 key={index}
-                className={`relative flex justify-between my-3 bg-white rounded-lg text-xl shadow-sm ${
-                  question.type === "simple" ? "p-5" : "p-2"
-                }`}
+                className={`bg-white rounded-lg text-xl shadow-sm my-3 p-2`}
               >
-                <div className="w-full p-2 rounded-lg">
-                  <div>
-                    <div className="flex flex-col md:flex-row gap-4 md:items-center">
-                      <h6>{index + 1}.</h6>
-                      <input
-                        name="question"
-                        type="text"
-                        required
-                        className="font-bold rounded relative block md:w-2/3 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"
-                        placeholder="Question"
-                        value={question[index]}
-                        onChange={(e) => handleQuestion(e, question)}
-                      />
-                      <select
-                        name="type"
-                        id="question-type"
-                        className="border border-gray-300 p-1.5 rounded w-1/3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"
-                        onChange={(e) => handleType(e, question)}
-                      >
-                        <option value="radio">Radio</option>
-                        <option value="checkbox">CheckBox</option>
-                        <option value="simple">Simple Text</option>
-                        <option value="text">Dropdown</option>
-                        <option value="file">File Uplaod</option>
-                      </select>
-                      <label className="flex items-center gap-5">
-                        <span className="font-bold">Required</span>
-                        <Switch
-                          className="inline"
-                          onChange={() =>
-                            setRequiredHandler(question, question.required)
-                          }
-                          checked={question.required}
+                <div className={`relative flex justify-between`}>
+                  <div className="w-full p-2 rounded-lg">
+                    <div>
+                      <div className="flex flex-col md:flex-row gap-4 md:items-center">
+                        <h6>{index + 1}.</h6>
+                        <input
+                          name="question"
+                          type="text"
+                          required
+                          className="font-bold rounded relative block md:w-2/3 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"
+                          placeholder="Question"
+                          value={question[index]}
+                          onChange={(e) => handleQuestion(e, question)}
                         />
-                      </label>
-                    </div>
-                    <div className="md:ml-10 mt-2">
-                      {question.type !== "simple" ? (
+                        <select
+                          name="type"
+                          id="question-type"
+                          className="border border-gray-300 p-1.5 rounded w-1/3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"
+                          onChange={(e) => handleType(e, question)}
+                        >
+                          <option value="radio">Radio</option>
+                          <option value="checkbox">CheckBox</option>
+                          <option value="simple">Simple Text</option>
+                          <option value="file">File Uplaod</option>
+                        </select>
+                        <label className="flex items-center gap-5">
+                          <span className="font-bold">Required</span>
+                          <Switch
+                            className="inline"
+                            onChange={() =>
+                              setRequiredHandler(question, question.required)
+                            }
+                            checked={question.required}
+                          />
+                        </label>
+                      </div>
+                      <input
+                        type="number"
+                        className="float-right border pl-2 md:w-1/6 border-black focus:outline-none rounded"
+                        placeholder="Enter Mark(s)"
+                        required
+                        onChange={(e) => markHandler(e, question)}
+                      />
+                      <div className="md:ml-10 mt-2">
                         <div>
-                          {question.type !== "file" ? (
-                            question?.options.map((option, index) => {
-                              return (
-                                <div
-                                  key={index}
-                                  className="flex gap-2 items-center my-1"
+                          {question.type !== "simple" ? (
+                            <div>
+                              {question.type !== "file" ? (
+                                question?.options.map((option, index) => {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className={`flex gap-2 items-center my-1 p-2 ${
+                                        question.correct_answer.indexOf(
+                                          option.value
+                                        ) !== -1 &&
+                                        "bg-indigo-600 rounded-md text-white"
+                                      }`}
+                                    >
+                                      <div
+                                        onClick={() =>
+                                          setcorrect_answerHandler(
+                                            question,
+                                            option
+                                          )
+                                        }
+                                      >
+                                        {question.type === "radio" && (
+                                          <ion-icon name="radio-button-off-outline"></ion-icon>
+                                        )}
+                                        {question.type === "checkbox" && (
+                                          <ion-icon name="square-outline"></ion-icon>
+                                        )}
+                                      </div>
+
+                                      <input
+                                        type="text"
+                                        className="border rounded px-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-transparent"
+                                        onChange={(e) =>
+                                          setOptionValue(e, question, option.id)
+                                        }
+                                        required
+                                        defaultValue={option.value}
+                                        placeholder={`Option ${index + 1}`}
+                                      />
+
+                                      {index ===
+                                        question.options.length - 1 && (
+                                        <i
+                                          onClick={() =>
+                                            deleteOptionHandler(
+                                              question,
+                                              index + 1
+                                            )
+                                          }
+                                          className="fa-solid fa-circle-xmark opacity-70 hover:opacity-100"
+                                        ></i>
+                                      )}
+                                    </div>
+                                  );
+                                })
+                              ) : (
+                                <input type="file" />
+                              )}
+                              {question.type !== "file" && (
+                                <h1
+                                  onClick={() => handleOption(question)}
+                                  className="text-center md:w-1/4 w-2/5 mt-2 cursor-pointer bg-blue-700 text-white text-sm md:font-bold rounded hover:bg-blue-800 p-1"
                                 >
-                                  {question.type === "radio" && (
-                                    <ion-icon name="radio-button-off-outline"></ion-icon>
-                                  )}
-                                  {question.type === "checkbox" && (
-                                    <ion-icon name="square-outline"></ion-icon>
-                                  )}
-
-                                  <input
-                                    type="text"
-                                    className="border rounded px-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    onChange={(e) =>
-                                      setOptionValue(e, question, option.id)
-                                    }
-                                    defaultValue={option.value}
-                                    placeholder={`Option ${index + 1}`}
-                                  />
-
-                                  <i
-                                    onClick={() =>
-                                      deleteOptionHandler(question, index + 1)
-                                    }
-                                    className="fa-solid fa-circle-xmark opacity-70 hover:opacity-100"
-                                  ></i>
-                                </div>
-                              );
-                            })
-                          ) : (
-                            <input type="file" />
-                          )}
-                          {question.type !== "file" && (
-                            <h1
-                              onClick={() => handleOption(question)}
-                              className="text-center md:w-1/4 w-2/5 mt-2 cursor-pointer bg-blue-700 text-white text-sm md:font-bold rounded hover:bg-blue-800 p-1"
-                            >
-                              Add Option+
-                            </h1>
-                          )}
-                          {alertVisibility && (
-                            <Alert
-                              msg={"More then 4 option is not allow!"}
-                              color={"bg-red-500"}
-                            />
-                          )}
+                                  Add Option+
+                                </h1>
+                              )}
+                            </div>
+                          ) : null}
                         </div>
-                      ) : null}
+                        <div className="flex justify-between items-center mt-2 text-sm">
+                          {(question.type === "radio" ||
+                            question.type === "checkbox") &&
+                            question.correct_answer.length === 0 && (
+                              <div className="flex gap-2">
+                                <i className="fa-solid fa-triangle-exclamation text-red-500"></i>
+                                <span className="text-red-400">
+                                  correct_answer(s) Not Selected.Please Select
+                                  correct_answer(s).
+                                </span>
+                              </div>
+                            )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+
                 <i
                   onClick={() => removeQuestion(question.id)}
-                  className="fa-solid fa-trash absolute right-3 bottom-3 cursor-pointer opacity-80 hover:opacity-100"
+                  className="fa-solid fa-trash cursor-pointer opacity-50 hover:opacity-100"
                 ></i>
               </div>
             );
@@ -409,14 +475,12 @@ export default function CreateQuiz() {
 
         <ToastContainer
           position="top-right"
-          autoClose={5000}
+          autoClose={3000}
           hideProgressBar={false}
-          newestOnTop={false}
+          newestOnTop={true}
           closeOnClick
           rtl={false}
           pauseOnFocusLoss
-          draggable
-          pauseOnHover
           theme="dark"
         />
       </div>

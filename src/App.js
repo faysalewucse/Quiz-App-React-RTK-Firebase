@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import MyPage from "./pages/MyPage";
 import ParticipateQuiz from "./pages/ParticipateQuiz";
+import Result from "./pages/Result";
 import Signup from "./pages/SignUp";
 
 function App() {
@@ -72,6 +73,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <ParticipateQuiz />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/result/:key"
+              element={
+                <PrivateRoute>
+                  <Result />
                 </PrivateRoute>
               }
             />

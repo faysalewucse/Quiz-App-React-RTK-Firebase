@@ -114,14 +114,19 @@ export default function MyPage() {
                 <h3 className="font-bold mb-5">My Participation(s)</h3>
                 <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-4 gap-5">
                   {myParticipation?.map((data, index) => {
-                    const submission = JSON.parse(data.submission);
-                    console.log(submission);
+                    let { quizinfo, submission, key } = data;
+                    console.log(myParticipation);
+                    submission = JSON.parse(submission);
                     return (
                       <div
                         key={index}
-                        //onClick={() => navigate(`/editQuiz/${quiz.joinKey}`)}
+                        onClick={() => navigate(`/result/${key}`)}
                       >
-                        <h6></h6>
+                        <QuizCard
+                          quizName={quizinfo.title}
+                          duration={quizinfo.duration}
+                          students={25}
+                        />
                       </div>
                     );
                   })}

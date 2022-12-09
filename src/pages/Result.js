@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { getDatabase, onValue, ref } from "firebase/database";
 import Loading from "../utils/Loading";
+import Error from "../utils/Error";
 
 export default function Result() {
   //current user UID
@@ -13,10 +14,11 @@ export default function Result() {
 
   //initiallize variables
   const key = useParams().key;
+  const passMarks = 50;
   const [error, setError] = useState("");
   const [mySubmission, setMySubmission] = useState([]);
-  const [marks, setMarks] = useState(0);
-  const [total_marks, setTotalMarks] = useState(0);
+  let my_marks = 0,
+    total_marks = 0;
 
   useEffect(() => {
     const db = getDatabase();
@@ -26,27 +28,6 @@ export default function Result() {
       if (snapshot) {
         const { submission } = snapshot.val();
         setMySubmission(JSON.parse(submission));
-        let marks = 0;
-        let total_marks = 0;
-        mySubmission?.forEach((question) => {
-          total_marks += parseInt(question.mark);
-          let correct = true;
-          question?.options.forEach((option) => {
-            console.log(question.answer.indexOf(option.value));
-            if (question.answer.indexOf(option.value) === -1) {
-              correct = false;
-            }
-          });
-
-          if (correct) marks += parseInt(question.mark);
-
-          if (question.correct_answer == question.answer) {
-            marks += parseInt(question.mark);
-          }
-        });
-        setMarks(marks);
-        setTotalMarks(total_marks);
-        console.log(marks, total_marks);
         return;
       }
       return setError("No Data Available");
@@ -54,23 +35,39 @@ export default function Result() {
   }, [key, uid]);
 
   const getColor = (number) => {
-    if (number >= 0.5) return "green";
-    else if (number < 0.5) return "red";
+    if (number >= 50) return "green";
+    else if (number < 50) return "red";
   };
 
+  if (mySubmission) {
+    mySubmission.forEach((question) => {
+      total_marks += parseInt(question.mark);
+      question.options.forEach((option) => {
+        if (
+          question.answer.indexOf(option.value) !== -1 &&
+          question.correct_answer.indexOf(option.value) === -1
+        ) {
+          my_marks += parseInt(question.mark);
+        }
+      });
+    });
+    console.log(total_marks, my_marks);
+  }
   return (
     <div>
       <div className="max-w-7xl mx-auto p-10">
-        <h1 className="my-10 text-center">10/10</h1>
+        <h1 className="my-10 text-center">
+          {my_marks} / {total_marks}
+        </h1>
         <div style={{ width: 200, height: 200, margin: "auto" }}>
           <CircularProgressbar
-            value={marks}
-            text={`${marks}%`}
+            value={(my_marks / total_marks) * 100}
+            text={`${(my_marks / total_marks) * 100}%`}
             strokeWidth="10"
             styles={{
               path: {
                 // Path color
-                stroke: `${getColor(marks / 100)}`,
+                stroke: `${getColor((my_marks / total_marks) * 100)}`,
               },
               text: {
                 fill: "#000000",
@@ -80,7 +77,8 @@ export default function Result() {
           ;
         </div>
         <h4 className="my-5 text-center">
-          Congratulation! <br /> You Got Full marks
+          {(my_marks / total_marks) * 100 >= passMarks && "Congratulation!"}{" "}
+          <br /> You Got {(my_marks / total_marks) * 100}% marks
         </h4>
         <h4 className="font-bold my-5">Solutions:</h4>
         <div>
@@ -127,7 +125,7 @@ export default function Result() {
             </div>
           ) : (
             <div>
-              <Loading />
+              <div>{!error ? <Loading /> : <Error msg={error} />}</div>
             </div>
           )}
         </div>

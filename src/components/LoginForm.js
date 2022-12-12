@@ -26,7 +26,6 @@ export default function SignupForm() {
       await login(email, password);
       navigate("/");
     } catch (err) {
-      console.log(err);
       setLoading(false);
       setError("Failed to Login! Try again");
     }

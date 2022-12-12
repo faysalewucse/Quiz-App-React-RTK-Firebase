@@ -33,7 +33,6 @@ export default function AddQuizModal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(JSON.stringify(questions));
     const db = getDatabase();
     const quizRef = ref(db, `${uid}/myquizes/${Date.now()}`);
     await set(quizRef, {

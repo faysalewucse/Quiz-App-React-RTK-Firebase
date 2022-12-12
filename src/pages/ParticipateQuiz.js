@@ -7,6 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Loading from "../utils/Loading";
 import { ToastContainer, toast } from "react-toastify";
 import Error from "../utils/Error";
+import millisToMinutesAndSeconds from "../utils/MilliSecondConverter";
 
 export default function ParticipateQuiz() {
   //getCurrentUserUID
@@ -67,7 +68,8 @@ export default function ParticipateQuiz() {
       toast.success("Submitted Answers successfully!");
       setLoading(false);
       setTimeout(() => {
-        navigate(`/result/${key}`);
+        if (!quizInfo.manualCheck) navigate(`/result/${key}`);
+        else navigate("/result/000000");
       }, 2000);
     } catch (error) {
       toast.error(error.message);
@@ -98,7 +100,6 @@ export default function ParticipateQuiz() {
     });
   }, [joinKey]);
 
-  console.log(quizInfo);
   //function for set Answer
   const setAnswerHandler = (question, option) => {
     //if the value already exists in the answer [] then remove it
@@ -128,55 +129,109 @@ export default function ParticipateQuiz() {
     });
   };
 
+  const setTextAnswer = (e, question) => {
+    setQuestions((prevQuestion) => {
+      return [
+        ...prevQuestion.map((ques) => {
+          if (ques.id === question.id) {
+            return {
+              ...question,
+              answer: e.target.value, // inserting simple text answer
+            };
+          }
+          return ques;
+        }),
+      ];
+    });
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-10">
-      {quizInfo ? (
-        <div>
-          <form onSubmit={handleSubmit}>
-            {questions.map((question) => {
-              return (
-                <div key={question.id} className="my-5">
-                  <div className="flex justify-between items-center">
-                    <h6 className="font-bold text-2xl">
-                      {question.id}. {question.question}{" "}
-                    </h6>
-                    <h6 className="text-sm text-indigo-600 font-bold">
-                      {question.type === "checkbox"
-                        ? "Can be Multiple Answer"
-                        : ""}
-                      {question.required ? "(required)" : ""}
+      {/* If Exam time available render questions else render exam info */}
+      <div>
+        {quizInfo ? (
+          <div>
+            {quizInfo.startDate < Date.now() ? (
+              <form onSubmit={handleSubmit}>
+                {questions.map((question) => {
+                  return (
+                    <div key={question.id} className="my-5">
+                      <div className="flex justify-between items-center">
+                        <h6 className="font-bold text-2xl">
+                          {question.id}. {question.question}{" "}
+                        </h6>
+                        <h6 className="text-sm text-indigo-600 font-bold">
+                          {question.type === "checkbox"
+                            ? "Can be Multiple Answer"
+                            : ""}
+                          {question.required ? "(required)" : ""}
+                        </h6>
+                      </div>
+                      <div className="ml-5 grid grid-cols-1 md:grid-cols-2">
+                        {question.type === "radio" ||
+                        question.type === "checkbox" ? (
+                          question.options.map((option, index) => {
+                            return (
+                              <div
+                                key={index}
+                                onClick={() =>
+                                  setAnswerHandler(question, option)
+                                }
+                                id={`question${question.id}`}
+                                className={`flex items-center gap-5 rounded m-2 py-2 px-5 hover:bg-indigo-600 hover:text-white ${
+                                  question.answer.indexOf(option.value) !== -1
+                                    ? "bg-indigo-600 text-white"
+                                    : "bg-indigo-200"
+                                } transition-all duration-300 shadow-md rounded-3xl`}
+                              >
+                                {question.answer.indexOf(option.value) !==
+                                  -1 && (
+                                  <i className="fa-solid fa-circle-check text-2xl"></i>
+                                )}
+                                <h6 className="text-2xl">{option.value}</h6>
+                              </div>
+                            );
+                          })
+                        ) : question.type === "file" ? (
+                          <input type="file" />
+                        ) : (
+                          <textarea
+                            type="textarea"
+                            className="p-2 mt-3 rounded bg-indigo-200 focus:outline-none focus:shadow-lg"
+                            value={question.answer}
+                            onChange={(e) => setTextAnswer(e, question)}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                <Button loading={loading} text={"Submit"} />
+              </form>
+            ) : (
+              <div>
+                {new Date(quizInfo.startDate) > Date.now() ? (
+                  <div>
+                    <h6>Exam not yet started</h6>
+                    <h6>
+                      {millisToMinutesAndSeconds(
+                        new Date(quizInfo.endDate) -
+                          new Date(quizInfo.startDate)
+                      )}
                     </h6>
                   </div>
-                  <div className="ml-5 grid grid-cols-1 md:grid-cols-2">
-                    {question.options.map((option, index) => {
-                      return (
-                        <div
-                          key={index}
-                          onClick={() => setAnswerHandler(question, option)}
-                          id={`question${question.id}`}
-                          className={`flex items-center gap-5 rounded m-2 py-2 px-5 hover:bg-indigo-600 hover:text-white ${
-                            question.answer.indexOf(option.value) !== -1
-                              ? "bg-indigo-600 text-white"
-                              : "bg-indigo-200"
-                          } transition-all duration-300 shadow-md rounded-3xl`}
-                        >
-                          {question.answer.indexOf(option.value) !== -1 && (
-                            <i className="fa-solid fa-circle-check text-2xl"></i>
-                          )}
-                          <h6 className="text-2xl">{option.value}</h6>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-            <Button loading={loading} text={"Submit"} />
-          </form>
-        </div>
-      ) : (
-        <div>{!error ? <Loading /> : <Error msg={error} />}</div>
-      )}
+                ) : (
+                  new Date(quizInfo.endDate) < Date.now() && (
+                    <h6>The Exam is Over.</h6>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div>{!error ? <Loading /> : <Error msg={error} />}</div>
+        )}
+      </div>
       <ToastContainer
         position="top-right"
         autoClose={5000}

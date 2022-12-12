@@ -94,9 +94,8 @@ export default function MyPage() {
                           quizName={quiz.title}
                           date={quiz.created_time}
                           duration={quiz.duration}
-                          students={25}
-                          type={quiz.type}
-                          key={quiz.joinKey}
+                          startDate={quiz.startDate}
+                          endDate={quiz.endDate}
                         />
                       </div>
                     );
@@ -114,9 +113,8 @@ export default function MyPage() {
                 <h3 className="font-bold mb-5">My Participation(s)</h3>
                 <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-4 gap-5">
                   {myParticipation?.map((data, index) => {
-                    let { quizinfo, submission, key } = data;
-                    console.log(myParticipation);
-                    submission = JSON.parse(submission);
+                    let { quizinfo, key } = data;
+                    //submission = JSON.parse(submission);
                     return (
                       <div
                         key={index}
@@ -125,7 +123,8 @@ export default function MyPage() {
                         <QuizCard
                           quizName={quizinfo.title}
                           duration={quizinfo.duration}
-                          students={25}
+                          startDate={quizinfo.startDate}
+                          endDate={quizinfo.endDate}
                         />
                       </div>
                     );

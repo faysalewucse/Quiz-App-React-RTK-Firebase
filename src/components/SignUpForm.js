@@ -33,7 +33,6 @@ export default function SignupForm() {
       await signup(email, password, username);
       navigate("/");
     } catch (err) {
-      console.log(err);
       setLoading(false);
       setError("Failed to create an account!");
     }

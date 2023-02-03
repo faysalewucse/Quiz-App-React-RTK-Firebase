@@ -23,9 +23,9 @@ function App() {
             <Route
               path="/"
               element={
-                <PublicRoute>
+                <PrivateRoute>
                   <Home />
-                </PublicRoute>
+                </PrivateRoute>
               }
             />
             <Route

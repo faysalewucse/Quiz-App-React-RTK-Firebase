@@ -145,13 +145,14 @@ export default function ParticipateQuiz() {
     });
   };
 
+  console.log(quizInfo);
   return (
     <div className="max-w-7xl mx-auto p-10">
       {/* If Exam time available render questions else render exam info */}
       <div>
         {quizInfo ? (
           <div>
-            {quizInfo.startDate < Date.now() ? (
+            {quizInfo.startDate < Date.now() || quizInfo.alwaysPublic ? (
               <form onSubmit={handleSubmit}>
                 {questions.map((question) => {
                   return (

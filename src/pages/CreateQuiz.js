@@ -129,6 +129,7 @@ export default function CreateQuiz() {
           return {
             ...q,
             type: e.target.value,
+            correct_answer: [],
           };
         } else return q;
       });

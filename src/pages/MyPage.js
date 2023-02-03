@@ -8,6 +8,8 @@ import ParticipateQuizModal from "../components/modals/ParticipateQuizModal";
 import NoDataYet from "../components/NoDataYet";
 import { useAuth } from "../contexts/AuthContext";
 import { controlParticipateModal } from "../features/modal/modalSlice";
+import png1 from "../assets/png1.png";
+import png2 from "../assets/png2.png";
 
 export default function MyPage() {
   //get current user UID
@@ -77,7 +79,7 @@ export default function MyPage() {
           Participation
         </h6>
       </div>
-      <div className="border border-indigo-400 rounded p-10">
+      <div className="border-t-2 border-indigo-400 rounded py-10">
         {nav === "myquizes" ? (
           <div>
             {myQuizes?.length !== 0 ? (
@@ -96,6 +98,7 @@ export default function MyPage() {
                           duration={quiz.duration}
                           startDate={quiz.startDate}
                           endDate={quiz.endDate}
+                          alwaysPublic={quiz.alwaysPublic}
                         />
                       </div>
                     );
@@ -125,6 +128,7 @@ export default function MyPage() {
                           duration={quizinfo.duration}
                           startDate={quizinfo.startDate}
                           endDate={quizinfo.endDate}
+                          alwaysPublic={quizinfo.alwaysPublic}
                         />
                       </div>
                     );
@@ -143,6 +147,13 @@ export default function MyPage() {
       >
         Create Quiz +
       </button>
+
+      <div className="absolute top-1/2 right-5">
+        <img src={png1} alt="png1" />
+      </div>
+      <div className="absolute bottom-0 left-0">
+        <img src={png2} alt="png2" />
+      </div>
       <ParticipateQuizModal />
     </div>
   );

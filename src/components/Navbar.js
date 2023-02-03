@@ -12,9 +12,13 @@ export default function Navbar() {
 
   return (
     <div className="bg-indigo-600 h-16 w-full flex justify-between items-center md:px-20 px-5 shadow-lg">
-      <Link to="/" className="text-white text-2xl font-bold">
-        <span className="text-3xl bg-white text-black px-2 rounded-md">Q</span>
-        uizTaker
+      <Link to="/" className="flex items-center text-white gap-10">
+        <h5 className="font-bold">
+          <span className="text-3xl bg-white text-black px-2 rounded-md">
+            Q
+          </span>
+          uizTaker
+        </h5>
       </Link>
       {currentUser ? (
         <div className="flex gap-5 items-center">

@@ -17,7 +17,7 @@ export default function MyPage() {
 
   //style
   const navLinkStyle =
-    "bg-black text-white py-1 rounded hover:opacity-100 cursor-pointer px-3";
+    "bg-black text-white rounded hover:opacity-100 cursor-pointer p-3";
   //all data
   const [myQuizes, setMyQuizes] = useState([]);
   const [myParticipation, setMyParticipation] = useState([]);
@@ -55,29 +55,31 @@ export default function MyPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-10">
-      <button
-        onClick={participateHandler}
-        className="bg-blue-600 text-white p-2 rounded w-full mb-3 hover:bg-blue-700 text-xl"
-      >
-        Participate in Quiz
-      </button>
-      <div className="flex gap-1 mb-5">
-        <h6
-          onClick={() => setNav("myquizes")}
-          className={`${navLinkStyle} ${
-            nav === "myquizes" ? "opacity-100" : "opacity-50"
-          }`}
+      <div className="flex justify-between gap-1 mb-5">
+        <div className="flex gap-2">
+          <h6
+            onClick={() => setNav("myquizes")}
+            className={`${navLinkStyle} ${
+              nav === "myquizes" ? "opacity-100" : "opacity-50"
+            }`}
+          >
+            My Quizes
+          </h6>
+          <h6
+            onClick={() => setNav("participation")}
+            className={`${navLinkStyle} ${
+              nav === "participation" ? "opacity-100" : "opacity-50"
+            }`}
+          >
+            Participation
+          </h6>
+        </div>
+        <button
+          onClick={participateHandler}
+          className="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 text-xl"
         >
-          My Quizes
-        </h6>
-        <h6
-          onClick={() => setNav("participation")}
-          className={`${navLinkStyle} ${
-            nav === "participation" ? "opacity-100" : "opacity-50"
-          }`}
-        >
-          Participation
-        </h6>
+          Participate in Quiz
+        </button>
       </div>
       <div className="border-t-2 border-indigo-400 rounded py-10">
         {nav === "myquizes" ? (

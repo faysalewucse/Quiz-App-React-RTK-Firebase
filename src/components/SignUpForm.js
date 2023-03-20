@@ -34,7 +34,7 @@ export default function SignupForm() {
       navigate("/");
     } catch (err) {
       setLoading(false);
-      setError("Failed to create an account!");
+      setError(err.message);
     }
   }
 

@@ -236,8 +236,8 @@ export default function CreateQuiz() {
 
   return (
     <div className="relative bg-indigo-100 min-h-screen p-10">
-      <div className="invisible lg:visible rounded-lg rotate-45 bg-indigo-400 h-1/2 w-12 absolute"></div>
-      <div className="invisible lg:visible rounded-lg rotate-12 bg-indigo-400 h-1/2 w-12 absolute"></div>
+      <div className="invisible lg:blur-3xl lg:visible rounded-lg rotate-45 bg-indigo-400 h-1/2 w-12 absolute"></div>
+      <div className="invisible lg:blur-3xl lg:visible rounded-lg rotate-12 bg-indigo-400 h-1/2 w-12 absolute"></div>
       <div className="max-w-7xl mx-auto md:px-24 px-2">
         <h3 className="text-center font-extrabold text-gray-900">Questions</h3>
         <form className="mt-8" onSubmit={handleSubmit}>

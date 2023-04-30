@@ -154,7 +154,7 @@ export default function ParticipateQuiz() {
           <div>
             {quizInfo.startDate < Date.now() || quizInfo.alwaysPublic ? (
               <form onSubmit={handleSubmit}>
-                {questions.map((question) => {
+                {questions?.map((question) => {
                   return (
                     <div key={question.id} className="my-5">
                       <div className="flex justify-between items-center">

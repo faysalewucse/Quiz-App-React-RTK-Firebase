@@ -84,7 +84,7 @@ export default function ParticipateQuiz() {
     onValue(quizRef, (snapshot) => {
       if (snapshot) {
         snapshot.forEach((childSnapshot) => {
-          const { myquizes } = childSnapshot?.val();
+          const { myquizes = "" } = childSnapshot?.val();
           if (myquizes[joinKey]?.joinKey === joinKey) {
             const edit = JSON.parse(myquizes[joinKey]?.questions).map(
               (question) => {
@@ -154,6 +154,9 @@ export default function ParticipateQuiz() {
           <div>
             {quizInfo.startDate < Date.now() || quizInfo.alwaysPublic ? (
               <form onSubmit={handleSubmit}>
+                <h4 className="font-bold text-indigo-500">
+                  Title: {quizInfo.title}
+                </h4>
                 {questions.map((question) => {
                   return (
                     <div key={question.id} className="my-5">
@@ -182,14 +185,14 @@ export default function ParticipateQuiz() {
                                 className={`flex items-center gap-5 rounded m-2 py-2 px-5 hover:bg-indigo-600 hover:text-white ${
                                   question.answer.indexOf(option.value) !== -1
                                     ? "bg-indigo-600 text-white"
-                                    : "bg-indigo-200"
-                                } transition-all duration-300 shadow-md rounded-3xl`}
+                                    : "bg-indigo-50 border border-indigo-600 text-indigo-500"
+                                } transition-all duration-300 rounded-3xl`}
                               >
                                 {question.answer.indexOf(option.value) !==
                                   -1 && (
                                   <i className="fa-solid fa-circle-check text-2xl"></i>
                                 )}
-                                <h6 className="text-2xl">{option.value}</h6>
+                                <h6 className="text-lg">{option.value}</h6>
                               </div>
                             );
                           })

@@ -18,13 +18,16 @@ export default function ParticipateQuizModal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(code.trim());
+
     const db = getDatabase();
     const quizRef = ref(db);
     onValue(quizRef, (snapshot) => {
+      console.log(snapshot.val());
       if (snapshot) {
         snapshot.forEach((childSnapshot) => {
-          const { myquizes } = childSnapshot?.val();
+          console.log(childSnapshot.val());
+          const { myquizes = "" } = childSnapshot?.val();
+          console.log(myquizes);
           if (myquizes[code]?.joinKey === code) {
             dispatch(controlParticipateModal());
             return navigate(`/participateQuiz/${code.trim()}`);

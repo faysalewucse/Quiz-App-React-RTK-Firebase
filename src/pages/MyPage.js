@@ -121,7 +121,9 @@ export default function MyPage() {
             <div>
               {myParticipation?.length !== 0 ? (
                 <div>
-                  <h3 className="font-bold mb-5">My Participation(s)</h3>
+                  <h3 className="font-bold mb-5 text-white">
+                    My Participation(s)
+                  </h3>
                   <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-4 gap-5">
                     {myParticipation?.map((data, index) => {
                       let { quizinfo, key } = data;

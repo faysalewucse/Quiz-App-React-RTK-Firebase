@@ -15,7 +15,7 @@ export default function EditQuiz() {
   const [clipBoard, setClipboard] = useState(false);
 
   const clipBoardHandler = () => {
-    copy(`localhost:3000/participateQuiz/${joinKey}`);
+    copy(`https://quiztaker.netlify.app/participateQuiz/${joinKey}`);
     setClipboard(true);
     setTimeout(() => {
       setClipboard(false);
@@ -266,9 +266,9 @@ export default function EditQuiz() {
         <div className="text-sm flex items-center mb-5">
           <p
             onClick={clipBoardHandler}
-            className="cursor-pointer break-words font-thin text-blue-500 mr-5 box-content"
+            className="cursor-pointer break-words font-bold text-blue-500 mr-5 box-content"
           >
-            localhost:3000/participateQuiz/{joinKey}{" "}
+            https://quiztaker.netlify.app/participateQuiz/{joinKey}{" "}
           </p>
           <i
             onClick={clipBoardHandler}

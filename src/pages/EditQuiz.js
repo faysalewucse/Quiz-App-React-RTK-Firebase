@@ -353,7 +353,7 @@ export default function EditQuiz() {
                 key={index}
                 className={`bg-white rounded-lg text-xl shadow-sm my-3 p-2`}
               >
-                <div className={`relative flex justify-between`}>
+                <div className={`relative flex justify-between text-sm`}>
                   <div className="w-full p-2 rounded-lg">
                     <div className="flex flex-col md:flex-row gap-4 md:items-center">
                       <h6>{index + 1}.</h6>

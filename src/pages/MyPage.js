@@ -56,12 +56,7 @@ export default function MyPage() {
   return (
     <div className="bg-gradient-to-b from-indigo-700 to-blue-600 h-screen">
       <div className="max-w-7xl mx-auto p-10">
-        <img
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-20 -z-10"
-          src="images/bg.svg"
-          alt="background"
-        />
-        <div className="flex justify-between gap-1 mb-5">
+        <div className="flex flex-wrap justify-between gap-1 mb-2 md:mb-5 text-xs md:text-md">
           <div className="flex gap-2">
             <h6
               onClick={() => setNav("myquizes")}
@@ -80,12 +75,20 @@ export default function MyPage() {
               Participation
             </h6>
           </div>
-          <button
-            onClick={participateHandler}
-            className="bg-white hover:from-blue-900 hover:to-blue-600 px-4 font-semibold rounded float-right"
-          >
-            Participate in Quiz
-          </button>
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={participateHandler}
+              className="bg-white hover:from-blue-900 hover:to-blue-600 p-2 md:px-4 font-semibold rounded float-right"
+            >
+              Participate in Quiz
+            </button>
+            <button
+              onClick={() => navigate("/createQuiz")}
+              className="lg:hidden bg-white hover:scale-105 transition-all duration-300 hover:from-blue-900 hover:to-blue-600 px-4 font-semibold rounded float-right"
+            >
+              Create Quiz +
+            </button>
+          </div>
         </div>
         <div className="border-t-2 border-indigo-400 rounded py-10">
           {nav === "myquizes" ? (
@@ -93,7 +96,7 @@ export default function MyPage() {
               {myQuizes?.length !== 0 ? (
                 <div>
                   <h3 className="font-bold mb-5 text-white">My Quizes</h3>
-                  <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-4 gap-5">
+                  <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-3 gap-5">
                     {myQuizes?.map((quiz, index) => {
                       return (
                         <div
@@ -124,7 +127,7 @@ export default function MyPage() {
                   <h3 className="font-bold mb-5 text-white">
                     My Participation(s)
                   </h3>
-                  <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-4 gap-5">
+                  <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-3 gap-5">
                     {myParticipation?.map((data, index) => {
                       let { quizinfo, key } = data;
                       //submission = JSON.parse(submission);
@@ -151,17 +154,18 @@ export default function MyPage() {
             </div>
           )}
         </div>
+
         <button
           onClick={() => navigate("/createQuiz")}
-          className="md:absolute md:my-0 my-5 bottom-10 right-10 bg-white px-4 py-2 font-semibold rounded float-right"
+          className="invisible lg:visible md:absolute md:my-0 my-5 bottom-10 right-10 bg-white px-4 py-2 font-semibold rounded float-right"
         >
           Create Quiz +
         </button>
 
-        <div className="absolute top-1/2 right-5">
+        <div className="invisible lg:visible fixed top-1/2 right-5">
           <img src={png1} alt="png1" />
         </div>
-        <div className="absolute bottom-0 left-0">
+        <div className="invisible lg:visible fixed bottom-5 left-5">
           <img src={png2} alt="png2" />
         </div>
         <ParticipateQuizModal />
